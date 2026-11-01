@@ -1,126 +1,125 @@
 # 🏦 ANN Customer Churn Classification
 
-An end-to-end **Artificial Neural Network (ANN)** project that predicts whether a bank customer is likely to leave the bank. The project uses machine learning preprocessing techniques and a trained deep learning model to generate churn predictions through an interactive Streamlit web application.
+An end-to-end **Artificial Neural Network (ANN)** project that predicts the likelihood of a bank customer leaving the bank. The trained TensorFlow/Keras model is served through an interactive **Streamlit** dashboard called **ChurnIQ**.
 
-## 🚀 Project Overview
+The application accepts customer details, applies the same preprocessing used during training, and displays a churn probability with a risk classification.
 
-Customer churn is a major challenge for banks and financial institutions. Identifying customers who are likely to leave helps businesses understand customer behavior and plan retention strategies.
+## 🚀 Live Demo
 
-This project uses customer information such as credit score, age, account balance, geography, and account activity to predict the probability of a customer leaving the bank.
+**[Open the Streamlit App](https://requirementtxt-fi2bkypw4v7mvtegdexvhq.streamlit.app/)**
 
-The trained ANN model is integrated into a Streamlit application where users can enter customer details and receive a churn prediction along with the predicted probability.
+> The live application requires the model and preprocessing artifacts to be available in its deployment environment.
 
 ## ✨ Features
 
-- **Customer Churn Prediction:** Predict whether a customer is likely to leave the bank.
-- **Artificial Neural Network:** Use a trained deep learning model for binary classification.
-- **Data Preprocessing:** Encode categorical variables and scale numerical features.
-- **Interactive Web Application:** Enter customer details through a Streamlit interface.
-- **Prediction Probability:** Display the estimated probability of customer churn.
-- **Model Persistence:** Load the trained model, encoders, and scaler without retraining the model every time the application starts.
-- **Jupyter Notebooks:** Explore data preprocessing, model development, and prediction workflows.
+- **Customer churn prediction:** Estimates whether a customer is likely to leave the bank.
+- **ANN binary-classification model:** Uses a trained TensorFlow/Keras neural network.
+- **Consistent preprocessing:** Encodes gender and geography and scales the input features using saved Scikit-learn objects.
+- **Interactive Streamlit dashboard:** Collects customer details through sidebar controls.
+- **Probability visualization:** Shows the estimated churn probability with a Plotly gauge and progress indicator.
+- **Risk classification:** Uses a 0.5 probability threshold to label the result as higher or lower churn risk.
+- **Saved model artifacts:** Loads the trained model, encoders, and scaler at application startup rather than retraining for every prediction.
 
-## 🛠️ Tech Stack
+## 🧰 Tech Stack
 
-- **Programming Language:** Python
-- **Deep Learning:** TensorFlow, Keras
-- **Data Manipulation:** Pandas, NumPy
-- **Machine Learning Utilities:** Scikit-learn
-- **Data Visualization:** Matplotlib
-- **Web Application:** Streamlit
-- **Model Serialization:** Pickle
-- **Development Environment:** Jupyter Notebook
+| Area | Tools |
+|---|---|
+| Language | Python |
+| Deep learning | TensorFlow, Keras |
+| Data processing | Pandas, NumPy |
+| Preprocessing | Scikit-learn |
+| Visualization | Plotly, Matplotlib |
+| Web application | Streamlit |
+| Model/artifact storage | HDF5/Keras model files, Pickle |
+| Development | Jupyter Notebook |
 
 ## 📂 Project Structure
 
+The main application and required runtime artifacts are:
+
 ```text
 ANN-Classification-Churn/
-│
-├── app.py                       # Streamlit web application
-├── Churn_Modelling.csv          # Customer churn dataset
-├── experiment.ipynb             # Data preprocessing and model experiments
-├── prediction.ipynb             # Prediction workflow
-│
-├── model.h5                     # Trained ANN model
-├── model.keras                  # Saved Keras model
-├── scaler.pkl                   # Fitted feature scaler
-├── label_encoder_gender.pkl     # Gender label encoder
-├── label_encoder_geo.pkl        # Geography one-hot encoder
-├── onehot_encoder_geo.pkl       # Additional encoder artifact
-│
-├── requirement.txt              # Python dependencies
-└── README.md                    # Project documentation
+├── app.py
+├── Churn_Modelling.csv
+├── model.h5
+├── model.keras
+├── scaler.pkl
+├── label_encoder_gender.pkl
+├── label_encoder_geo.pkl
+├── onehot_encoder_geo.pkl
+├── requirements.txt
+└── README.md
 ```
+
+The Streamlit app currently loads `model.h5`, `label_encoder_geo.pkl`, `label_encoder_gender.pkl`, and `scaler.pkl`. The Geography encoder is a fitted **OneHotEncoder**, despite the legacy filename `label_encoder_geo.pkl`.
 
 ## 📊 Dataset
 
-The project uses the `Churn_Modelling.csv` dataset, which contains customer information and a target variable indicating whether the customer exited the bank.
+This project uses the `Churn_Modelling.csv` bank customer dataset, containing 10,000 customer records.
 
-The dataset contains **10,000 customer records**.
-
-### Input Features
+### Input features
 
 | Feature | Description |
 |---|---|
 | CreditScore | Customer's credit score |
-| Geography | Customer's country |
 | Gender | Customer's gender |
 | Age | Customer's age |
-| Tenure | Number of years the customer has been with the bank |
+| Tenure | Number of years with the bank |
 | Balance | Customer's account balance |
 | NumOfProducts | Number of bank products used |
 | HasCrCard | Whether the customer has a credit card |
 | IsActiveMember | Whether the customer is an active member |
 | EstimatedSalary | Customer's estimated salary |
+| Geography_France | One-hot encoded France indicator |
+| Geography_Germany | One-hot encoded Germany indicator |
+| Geography_Spain | One-hot encoded Spain indicator |
 
-### Target Variable
+The original `Geography` column is transformed into three one-hot encoded columns. The columns `RowNumber`, `CustomerId`, and `Surname` are excluded from model inputs.
+
+### Target variable
 
 - `Exited = 1`: The customer left the bank.
-- `Exited = 0`: The customer remained with the bank.
+- `Exited = 0`: The customer stayed with the bank.
 
-The columns `RowNumber`, `CustomerId`, and `Surname` are excluded from model training because they are not used as predictive input features.
+## 🧠 Model Development Workflow
 
-## 🧠 Machine Learning Workflow
+1. **Load and explore data** using Pandas.
+2. **Clean the dataset** by removing identifier and non-predictive columns.
+3. **Encode categorical variables:** Label-encode `Gender` and one-hot encode `Geography`.
+4. **Separate features and target:** Use the customer attributes as input features and `Exited` as the classification target.
+5. **Split the data** into training and testing sets.
+6. **Scale the features** with `StandardScaler`; fit the scaler on training data and apply it to test data.
+7. **Train the ANN** with TensorFlow/Keras for binary classification.
+8. **Save the model and preprocessing artifacts** for reuse.
+9. **Serve predictions** through the Streamlit dashboard.
 
-The project follows these major steps:
+## ⚙️ Run Locally
 
-1. **Data Loading and Exploration:** Load the dataset using Pandas and inspect its structure.
-2. **Data Cleaning:** Remove irrelevant columns and prepare the input features and target variable.
-3. **Categorical Encoding:** Use Label Encoding for gender and One-Hot Encoding for geography.
-4. **Feature Scaling:** Apply a fitted `StandardScaler` to scale the model inputs.
-5. **Model Training:** Train an Artificial Neural Network using TensorFlow and Keras for binary classification.
-6. **Model Saving:** Save the trained model and preprocessing objects for later use.
-7. **Prediction:** Transform new customer details using the saved preprocessing objects and generate churn probabilities.
-8. **Deployment Interface:** Use Streamlit to provide an interactive interface for customer churn prediction.
-
-## ⚙️ Installation and Setup
-
-Follow these steps to run the project locally.
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Vinay980/ANN-Classification-Churn.git
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
 cd ANN-Classification-Churn
 ```
 
-### 3. Create a Virtual Environment
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate the virtual environment.
+### 3. Activate the environment
 
-**Windows:**
+**Windows PowerShell:**
 
-```bash
-venv\Scripts\activate
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+**Windows Command Prompt:**
+
+```bat
+venv\Scripts\activate.bat
 ```
 
 **macOS / Linux:**
@@ -129,104 +128,76 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 4. Install Dependencies
+### 4. Install dependencies
 
-The repository currently uses a file named `requirement.txt`.
+The dependency file is named **`requirements.txt`**.
 
 ```bash
-pip install -r requirement.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-### 5. Run the Streamlit Application
+### 5. Start the Streamlit application
 
 ```bash
 streamlit run app.py
 ```
 
-Once the application starts, open the local URL displayed in your terminal, typically:
+Open the local URL shown in the terminal (usually [http://localhost:8501](http://localhost:8501)).
 
-```text
-http://localhost:8501
-```
+## 🖥️ How to Use
 
-## 🖥️ How to Use the Application
-
-1. Start the Streamlit application.
+1. Open the application.
 2. Select the customer's geography and gender.
-3. Enter the customer's credit score, age, tenure, balance, estimated salary, and other account details.
-4. View the predicted churn probability.
-5. Check the prediction message to determine whether the model classifies the customer as likely to churn.
+3. Enter the customer's credit score, balance, estimated salary, age, tenure, number of products, and account activity details.
+4. Click **Analyze Customer**.
+5. Review the predicted churn probability and risk classification.
+6. Expand **View encoded model input** to inspect the feature values passed to the model.
 
-The prediction threshold in the current application is `0.5`:
+## 📈 Understanding the Prediction
 
-- Probability greater than `0.5`: The customer is classified as likely to churn.
-- Probability less than or equal to `0.5`: The customer is classified as unlikely to churn.
+The application displays the model's output as a probability between 0 and 1, converted to a percentage.
 
-## 🔮 Sample Prediction
+| Model probability | Application classification |
+|---|---|
+| 0.50 or higher | Higher churn risk |
+| Below 0.50 | Lower churn risk |
 
-For example, a customer can be evaluated using the following input:
+The 0.5 threshold is the threshold currently configured in the app. It is a modelling choice and may need to be tuned using validation results and business requirements.
 
-```python
-input_data = {
-    "CreditScore": 700,
-    "Geography": "France",
-    "Gender": "Male",
-    "Age": 35,
-    "Tenure": 5,
-    "Balance": 10000,
-    "NumOfProducts": 2,
-    "HasCrCard": 1,
-    "IsActiveMember": 1,
-    "EstimatedSalary": 50000
-}
-```
+**Important:** A predicted probability is an estimate from the trained model, not a guarantee that a customer will or will not leave.
 
-The trained model processes the customer's information and returns a churn probability.
+## 🎯 What This Project Demonstrates
 
-**Note:** The actual result depends on the trained model and its preprocessing pipeline. The example input does not imply a guaranteed prediction.
+- Building and using an Artificial Neural Network for binary classification.
+- Preparing tabular data for deep learning.
+- Label encoding and one-hot encoding.
+- Feature scaling with `StandardScaler`.
+- Saving and loading TensorFlow/Keras models.
+- Reusing fitted preprocessing objects during inference.
+- Building and deploying an interactive Streamlit application.
+- Communicating classification results with probability visualizations.
 
-## 📈 Model Output
+## 🔭 Possible Improvements
 
-The application displays:
-
-- **Churn Probability:** The model's estimated probability that the customer will leave.
-- **Churn Classification:** Whether the predicted probability exceeds the configured threshold.
-
-The probability is a model estimate, not a guarantee of future customer behavior.
-
-## 🎯 Learning Objectives
-
-This project demonstrates practical experience with:
-
-- Artificial Neural Networks and deep learning.
-- Binary classification problems.
-- Exploratory data analysis and feature preprocessing.
-- Label Encoding and One-Hot Encoding.
-- Feature scaling with StandardScaler.
-- Saving and loading trained machine learning models.
-- Using a trained TensorFlow model for inference.
-- Building interactive machine learning applications with Streamlit.
-
-## 🔧 Future Improvements
-
-- Add model evaluation metrics such as precision, recall, F1-score, and ROC-AUC.
-- Visualize customer churn patterns and feature distributions.
-- Improve the user interface with clearer prediction summaries and probability charts.
-- Add model performance monitoring and input validation.
-- Deploy the application to a cloud hosting platform.
-- Evaluate an appropriate classification threshold based on business requirements.
+- Report evaluation metrics such as precision, recall, F1-score, ROC-AUC, and a confusion matrix.
+- Tune the classification threshold based on validation performance and the cost of false positives/false negatives.
+- Add model explainability to help interpret factors associated with churn.
+- Add input validation and automated tests for the preprocessing pipeline.
+- Track model performance and data drift after deployment.
 
 ## ⚠️ Disclaimer
 
-This project is intended for educational and demonstration purposes. Predictions are based on the available dataset and the trained model. They should not be treated as definitive financial or business decisions.
+This project is for learning and demonstration purposes. Predictions depend on the dataset, preprocessing pipeline, and trained model. They should not be used as the sole basis for financial or business decisions.
 
 ## 👨‍💻 Author
 
 **Vinay Kumar Mahto**
 
 - GitHub: [@Vinay980](https://github.com/Vinay980)
-- Project Repository: [ANN-Classification-Churn](https://github.com/Vinay980/ANN-Classification-Churn)
+- Repository: [ANN-Classification-Churn](https://github.com/Vinay980/ANN-Classification-Churn)
+- Live Demo: [Streamlit App](https://requirementtxt-fi2bkypw4v7mvtegdexvhq.streamlit.app/)
 
 ---
 
-⭐ If you find this project useful, consider giving the repository a star!
+If you find this project useful, please consider giving the repository a ⭐.
